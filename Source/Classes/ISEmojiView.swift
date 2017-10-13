@@ -17,12 +17,6 @@ public protocol ISEmojiViewDelegate: class {
     ///   - emojiView: the emoji view
     ///   - emoji: a emoji
     func emojiViewDidSelectEmoji(emojiView: ISEmojiView, emoji: String)
-    
-    
-    /// will delete last character in you input view
-    ///
-    /// - Parameter emojiView: the emoji view
-    func emojiViewDidPressDeleteButton(emojiView: ISEmojiView)
 }
 
 fileprivate let EmojiSize = CGSize(width: 45, height: 35)
@@ -34,7 +28,7 @@ fileprivate let ISMainBackgroundColor = UIColor(red: 249/255.0, green: 249/255.0
 
 /// A emoji keyboard view
 public class ISEmojiView: UIView, UICollectionViewDataSource, UICollectionViewDelegate {
-
+    
     /// the delegate for callback
     public weak var delegate: ISEmojiViewDelegate?
     
@@ -66,12 +60,6 @@ public class ISEmojiView: UIView, UICollectionViewDataSource, UICollectionViewDe
         pageContr.backgroundColor = .clear
         return pageContr
     }()
-    public var deleteButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("⌫", for: .normal)
-        button.tintColor = .lightGray
-        return button
-    }()
     
     public var emojis: [[String]]!
     
@@ -95,7 +83,7 @@ public class ISEmojiView: UIView, UICollectionViewDataSource, UICollectionViewDe
     public override func layoutSubviews() {
         updateControlLayout()
     }
-
+    
     private func setupUI() {
         frame = defaultFrame
         
@@ -118,10 +106,6 @@ public class ISEmojiView: UIView, UICollectionViewDataSource, UICollectionViewDe
         pageControl.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleRightMargin]
         addSubview(pageControl)
         
-        // DeleteButton
-        deleteButton.addTarget(self, action: #selector(deleteButtonPressed), for: .touchUpInside)
-        addSubview(deleteButton)
-        
         // Long press to pop preview
         let emojiLongPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(emojiLongPressHandle))
         self.addGestureRecognizer(emojiLongPressGestureRecognizer)
@@ -135,13 +119,12 @@ public class ISEmojiView: UIView, UICollectionViewDataSource, UICollectionViewDe
         let pageCount = collectionView.numberOfSections
         let pageControlSizes = pageControl.size(forNumberOfPages: pageCount)
         pageControl.frame = CGRect(x: frame.midX - pageControlSizes.width / 2.0,
-                                        y: frame.height-pageControlSizes.height,
-                                        width: pageControlSizes.width,
-                                        height: pageControlSizes.height)
+                                   y: frame.height-pageControlSizes.height,
+                                   width: pageControlSizes.width,
+                                   height: pageControlSizes.height)
         pageControl.numberOfPages = pageCount
         
         // update delete button
-        deleteButton.frame = CGRect(x: frame.width - 48, y: frame.height - 40, width: 40, height: 40)
     }
     
     //MARK: LongPress
@@ -210,10 +193,6 @@ public class ISEmojiView: UIView, UICollectionViewDataSource, UICollectionViewDe
         if let emoji = sender.titleLabel?.text {
             self.delegate?.emojiViewDidSelectEmoji(emojiView: self, emoji: emoji)
         }
-    }
-    
-    @objc private func deleteButtonPressed(sender: UIButton) {
-        self.delegate?.emojiViewDidPressDeleteButton(emojiView: self)
     }
     
     @objc private func pageControlTouched(sender: UIPageControl) {
@@ -373,3 +352,5 @@ fileprivate class ISEmojiPopView: UIView {
         self.emojiLabel.text = emoji
     }
 }
+
+
